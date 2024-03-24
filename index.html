@@ -52,6 +52,10 @@
             gameMissionImage.src = 'https://raw.githubusercontent.com/yunrang2/upload/master/게임_미션판.png';
             gameMissionImage.style.width = '20vw'; // 창의 가로 크기의 20%
             gameMissionImage.style.height = '100vh'; // 창의 세로 크기와 동일
+            gameMissionImage.style.position = 'fixed';
+            gameMissionImage.style.top = '0';
+            gameMissionImage.style.left = '0';
+            gameMissionImage.style.transform = 'translateY(0)'; // 움직임 없음
             document.body.appendChild(gameMissionImage);
             // 돌아가기 이미지 추가
             var backImage = document.createElement('img');

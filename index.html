@@ -41,6 +41,7 @@
         document.getElementById('rightImage').addEventListener('click', function() {
             // 게임 이미지 클릭 시 음악 재생 및 추가 작업 수행
             var audio = new Audio('https://raw.githubusercontent.com/yunrang2/upload/master/Intro.mp3');
+             udio.loop = true;
             audio.volume = 0.5; // 볼륨 설정
             audio.play();
 // 게임 이미지와 기존 이미지들 숨기기
@@ -124,6 +125,7 @@
                 // 새로운 노래 재생
               var newAudio = new Audio(newAudioSrc);
               newAudio.volume = 0.2; // 볼륨 설정
+              newaudio.loop = true;
               newAudio.play();
           
               // 이전의 돌아가기 이미지를 지우고 새로운 돌아가기 이미지 생성

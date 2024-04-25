@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kimpro Mission</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <link rel="stylesheet" href="styles.css">
     <style>
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('https://raw.githubusercontent.com/yunrang2/upload/master/HakgyoansimSamulhamR.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         body {
             margin: 0;
             background-color: green; /* 배경색 설정 */
@@ -27,7 +35,96 @@
           bottom: 0;
           right: 0;
         }
+                /* 추가한 스타일 */
+        .buttonContainer {
+            position: fixed;
+            bottom: 220px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            z-index: 2;
+        }
 
+        .button {
+            width: 200px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .button:hover {
+            transform: scale(1.1);
+        }
+
+        #timerContainer {
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 36px;
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 40%;
+            right: 5px;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 중앙 정렬 */
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            color: #555;
+        }
+
+        .button-bg-music {
+            background-color: #0099ff;
+            color: white;
+            padding: 0.8em 1.2em;
+            margin: 0.5em;
+            border: none;
+            cursor: pointer;
+            width: auto;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+            font-family: 'CustomFont', sans-serif;
+            text-shadow: 
+                -1px -1px 0 #000,  
+                1px -1px 0 #000,
+                -1px  1px 0 #000,
+                1px  1px 0 #000; /* 검은색 테두리 효과 */
+        }
+
+        .button-bg-music:hover {
+            background-color: #0044ff;
+        }
     </style>
 </head>
 <body>
@@ -37,132 +134,205 @@
     <!-- 오른쪽 이미지 (게임!) -->
     <img id="rightImage" src="https://raw.githubusercontent.com/yunrang2/upload/master/게임!.png" alt="게임!">
 
+    <!-- 추가된 버튼 이미지들 -->
+    <div class="buttonContainer">
+        <img class="button" src="https://raw.githubusercontent.com/yunrang2/upload/master/브금.png" alt="브금" onclick="openModal()" id="musicButton">
+        <img class="button" src="https://raw.githubusercontent.com/yunrang2/upload/master/타이머.png" alt="타이머" onclick="addTime()" id="timerButton">
+    </div>
+    <audio id="gameAudio"></audio>
+    <!-- 타이머 컨테이너 -->
+    <div id="timerContainer"></div>
+
+    <!-- 모달 -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <button class="button-bg-music" onclick="playAudio('https://raw.githubusercontent.com/yunrang2/upload/master/%EC%84%B9%EC%8B%9C.mp3')">섹시</button>
+            <button class="button-bg-music" onclick="playAudio('https://raw.githubusercontent.com/yunrang2/upload/master/%EB%B6%88%EC%8C%8D.mp3')">불쌍</button>
+            <button class="button-bg-music" onclick="playAudio('https://raw.githubusercontent.com/yunrang2/upload/master/%EB%A9%B8%EB%A7%9D.mp3')">멸망</button>
+            <button class="button-bg-music" onclick="playAudio('https://raw.githubusercontent.com/yunrang2/upload/master/%EA%B2%8C%EC%9E%84.mp3')">게임</button>
+            <button class="button-bg-music" onclick="playAudio('https://raw.githubusercontent.com/yunrang2/upload/master/%ED%99%A9%EB%8B%B9.mp3')">황당</button>
+        </div>
+    </div>
     <script>
-        document.getElementById('rightImage').addEventListener('click', function() {
-            // 게임 이미지 클릭 시 음악 재생 및 추가 작업 수행
-            var audio = new Audio('https://raw.githubusercontent.com/yunrang2/upload/master/Intro.mp3');
-             udio.loop = true;
-            audio.volume = 0.5; // 볼륨 설정
-            audio.play();
-// 게임 이미지와 기존 이미지들 숨기기
-            document.getElementById('leftImage').style.display = 'none';
-            document.getElementById('rightImage').style.display = 'none';
 
-                        // 게임 미션판 이미지 추가
-            var gameMissionImage = document.createElement('img');
-            gameMissionImage.src = 'https://raw.githubusercontent.com/yunrang2/upload/master/게임_미션판2.png';
-            gameMissionImage.style.width = '20vw'; // 창의 가로 크기의 20%
-            gameMissionImage.style.height = '100vh'; // 창의 세로 크기와 동일
-            gameMissionImage.style.position = 'fixed';
-            gameMissionImage.style.top = '0';
-            gameMissionImage.style.left = '0';
-            gameMissionImage.style.transform = 'translateY(0)'; // 움직임 없음
-            document.body.appendChild(gameMissionImage);
-            // 돌아가기 이미지 추가
-            var backImage = document.createElement('img');
-            backImage.src = 'https://raw.githubusercontent.com/yunrang2/upload/master/돌아가기.png';
-            backImage.style.width = '300px'; // 가로 크기를 400px로 설정
-            backImage.style.height = 'auto';
-            backImage.style.position = 'fixed';
-            backImage.style.top = '0';
-            backImage.style.right = '0';
-            document.body.appendChild(backImage);
-            backImage.addEventListener('mouseenter', function() {
-                backImage.style.transform = 'scale(1.1)'; // 이미지를 약간 키웁니다.
+        function stopAllAudio() {
+            var audios = document.querySelectorAll('audio');
+            audios.forEach(function(audio) {
+                audio.pause();
+                audio.currentTime = 0; // 재생 위치를 처음으로 되돌림
             });
-          
-            backImage.addEventListener('mouseleave', function() {
-                backImage.style.transform = 'scale(1)'; // 마우스가 벗어나면 다시 원래 크기로 돌아갑니다.
-            });
-            // 돌아가기 이미지 클릭 시 초기 이미지로 되돌아감
-            backImage.addEventListener('click', function() {
-                // 새로 추가한 이미지 요소들을 제거
-                document.body.removeChild(startImage)
-                document.body.removeChild(gameMissionImage);
-                document.body.removeChild(backImage);
+        }
 
-                // 기존의 이미지들을 다시 표시
+        let audioElement;
+
+        function openModal() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'none';
+        }
+
+        function playAudio(src) {
+            if (audioElement) {
+                audioElement.pause();
+                audioElement = null;
+            }
+
+            audioElement = new Audio(src);
+            audioElement.loop = true;
+            audioElement.play();
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.keyCode === 27 && audioElement) { // Esc 키
+                audioElement.pause();
+                audioElement = null;
+            }
+        });
+
+        let timerId;
+        let currentTimer;
+        const duration = 30; // 기본 타이머 시간
+
+        function startTimer(initialTime) {
+            currentTimer = initialTime;
+            const timerContainer = document.getElementById('timerContainer');
+            timerContainer.style.display = 'block';
+            timerContainer.innerText = `${currentTimer}초`;
+
+            timerId = setInterval(() => {
+                currentTimer -= 1;
+                timerContainer.innerText = `${currentTimer}초`;
+
+                if (currentTimer <= 0) {
+                    clearInterval(timerId);
+                    currentTimer = duration; // 초기 시간으로 리셋
+                    timerContainer.style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        function addTime() {
+            if (timerId) {
+                clearInterval(timerId); // 현재 타이머 중지
+                currentTimer += 30; // 현재 타이머에 30초 추가
+                startTimer(currentTimer); // 새로운 타이머 시작
+            } else {
+                startTimer(duration); // 타이머가 시작되지 않았다면 기본 타이머 시작
+            }
+        }
+
+    document.getElementById('rightImage').addEventListener('click', function() {
+        var audio = new Audio('https://raw.githubusercontent.com/yunrang2/upload/master/Intro.mp3');
+        audio.volume = 0.5;
+        audio.loop = true;
+        audio.play();
+
+        document.getElementById('leftImage').style.display = 'none';
+        document.getElementById('rightImage').style.display = 'none';
+        document.getElementById('musicButton').style.display = 'none';
+        document.getElementById('timerButton').style.display = 'none';
+
+        var gameMissionImage = document.createElement('img');
+        gameMissionImage.src = 'https://raw.githubusercontent.com/yunrang2/upload/master/게임_미션판2.png';
+        gameMissionImage.style.width = '20vw';
+        gameMissionImage.style.height = '100vh';
+        gameMissionImage.style.position = 'fixed';
+        gameMissionImage.style.top = '0';
+        gameMissionImage.style.left = '0';
+        gameMissionImage.style.transform = 'translateY(0)';
+        document.body.appendChild(gameMissionImage);
+
+        var backImage = document.createElement('img');
+        backImage.src = 'https://raw.githubusercontent.com/yunrang2/upload/master/돌아가기.png';
+        backImage.style.width = '300px';
+        backImage.style.height = 'auto';
+        backImage.style.position = 'fixed';
+        backImage.style.top = '0';
+        backImage.style.right = '0';
+        document.body.appendChild(backImage);
+        backImage.addEventListener('mouseenter', function() {
+            backImage.style.transform = 'scale(1.1)';
+        });
+      
+        backImage.addEventListener('mouseleave', function() {
+            backImage.style.transform = 'scale(1)';
+        });
+        
+        backImage.addEventListener('click', function() {
+            document.body.removeChild(gameMissionImage);
+            document.body.removeChild(startImage);
+            document.body.removeChild(backImage);
+
+            document.getElementById('leftImage').style.display = 'initial';
+            document.getElementById('rightImage').style.display = 'initial';
+            document.getElementById('musicButton').style.display = 'initial';
+            document.getElementById('timerButton').style.display = 'initial';
+
+            audio.pause();
+        });
+
+        var startImage = document.createElement('img');
+        startImage.src = 'https://raw.githubusercontent.com/yunrang2/upload/master/게임_스타트.png';
+        startImage.style.width = '500px';
+        startImage.style.height = 'auto';
+        startImage.style.position = 'fixed';
+        startImage.style.bottom = '0';
+        startImage.style.left = '50%';
+        startImage.style.transform = 'translateX(-50%)';
+        document.body.appendChild(startImage);
+
+        startImage.addEventListener('click', function() {
+            audio.pause();
+
+            document.body.removeChild(startImage);
+            document.body.removeChild(gameMissionImage);
+            document.body.removeChild(backImage);
+
+            var gameInProgressImage = document.createElement('img');
+            gameInProgressImage.src = 'https://raw.githubusercontent.com/yunrang2/upload/master/게임중.gif';
+            gameInProgressImage.style.position = 'fixed';
+            gameInProgressImage.style.bottom = '0';
+            gameInProgressImage.style.left = '50%';
+            gameInProgressImage.style.transform = 'translateX(-50%)';
+            document.body.appendChild(gameInProgressImage);
+            
+            document.getElementById('gameAudio').src = 'https://raw.githubusercontent.com/yunrang2/upload/master/신의손.mp3';
+            document.getElementById('gameAudio').loop = true;
+            document.getElementById('gameAudio').play();
+            
+            var newBackImage = document.createElement('img');
+            newBackImage.src = 'https://raw.githubusercontent.com/yunrang2/upload/master/돌아가기.png';
+            newBackImage.style.width = '300px';
+            newBackImage.style.height = 'auto';
+            newBackImage.style.position = 'fixed';
+            newBackImage.style.top = '0';
+            newBackImage.style.right = '0';
+            document.body.appendChild(newBackImage);
+            newBackImage.addEventListener('mouseenter', function() {
+                newBackImage.style.transform = 'scale(1.1)';
+            });
+            newBackImage.addEventListener('mouseleave', function() {
+                newBackImage.style.transform = 'scale(1)';
+            });
+
+            newBackImage.addEventListener('click', function() {
+                document.body.removeChild(gameInProgressImage);
+                document.body.removeChild(newBackImage);
+
                 document.getElementById('leftImage').style.display = 'initial';
                 document.getElementById('rightImage').style.display = 'initial';
+                document.getElementById('musicButton').style.display = 'initial';
+                document.getElementById('timerButton').style.display = 'initial';
 
-                // 노래 정지
-                audio.pause();
-            });
-            // 게임 스타트 이미지 추가
-            var startImage = document.createElement('img');
-            startImage.src = 'https://raw.githubusercontent.com/yunrang2/upload/master/게임_스타트.png';
-            startImage.style.width = '500px';
-            startImage.style.height = 'auto';
-            startImage.style.position = 'fixed';
-            startImage.style.bottom = '0'; // 아래에서 50px 떨어진 위치로 설정
-            startImage.style.left = '50%';
-            startImage.style.transform = 'translateX(-50%)';
-            document.body.appendChild(startImage);
-
-            startImage.addEventListener('click', function() {
-              // 게임 스타트 이미지 클릭 시 실행될 코드
-          
-              // 게임 스타트 이미지와 게임 미션판 이미지 숨기기
-              document.body.removeChild(startImage)
-              document.body.removeChild(gameMissionImage)
-              document.body.removeChild(backImage)
-          
-              // GIF 이미지 추가
-              var gameInProgressImage = document.createElement('img');
-              gameInProgressImage.src = 'https://raw.githubusercontent.com/yunrang2/upload/master/게임중.gif';
-              gameInProgressImage.style.position = 'fixed';
-              gameInProgressImage.style.bottom = '0';
-              gameInProgressImage.style.left = '50%';
-              gameInProgressImage.style.transform = 'translateX(-50%)';
-              document.body.appendChild(gameInProgressImage);
-
-                  // 노래 정지
-              audio.pause();
-
-                // 새로운 노래 선택
-                var newAudioSrc = 'https://raw.githubusercontent.com/yunrang2/upload/master/신의손.mp3';
-
-                // 새로운 노래 재생
-              var newAudio = new Audio(newAudioSrc);
-              newAudio.volume = 0.2; // 볼륨 설정
-              newaudio.loop = true;
-              newAudio.play();
-          
-              // 이전의 돌아가기 이미지를 지우고 새로운 돌아가기 이미지 생성
-              var newBackImage = document.createElement('img');
-              newBackImage.src = 'https://raw.githubusercontent.com/yunrang2/upload/master/돌아가기.png';
-              newBackImage.style.width = '300px'; // 가로 크기를 400px로 설정
-              newBackImage.style.height = 'auto';
-              newBackImage.style.position = 'fixed';
-              newBackImage.style.top = '0';
-              newBackImage.style.right = '0';
-              document.body.appendChild(newBackImage);
-              newBackImage.addEventListener('mouseenter', function() {
-                  newBackImage.style.transform = 'scale(1.1)'; // 이미지를 약간 키웁니다.
-              });
-              newBackImage.addEventListener('mouseleave', function() {
-                  newBackImage.style.transform = 'scale(1)'; // 마우스가 벗어나면 다시 원래 크기로 돌아갑니다.
-              });
-          
-              // 새로운 돌아가기 이미지 클릭 시 실행될 코드
-              newBackImage.addEventListener('click', function() {
-                  // 새로 추가한 이미지 요소들을 제거
-                  document.body.removeChild(gameInProgressImage);
-                  document.body.removeChild(newBackImage);
-          
-                  // 기존의 이미지들을 다시 표시
-                  document.getElementById('leftImage').style.display = 'initial';
-                  document.getElementById('rightImage').style.display = 'initial';
-          
-                  // 노래 정지
-                  
-                  if (newAudio) {
-                    newAudio.pause();
-                }
-
-              })
+                stopAllAudio();
             });
         });
+    });
     </script>
 </body>
 </html>
